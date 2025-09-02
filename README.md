@@ -1,3 +1,4 @@
+ HEAD
 # PrepMate - AI Interview Assistant
 
 A full-stack MERN application that helps users prepare for interviews with personalized AI-generated questions and feedback.
@@ -168,3 +169,7 @@ prepmate/
 ## License
 
 This project is licensed under the MIT License.
+=======
+# PrepMate-Your-AI-interview-Assistant
+It helps the  jobseekers of various tech fields to get themselves prepare by this newly AI Interviewer which enhances their their Interview Prepparation as well as motivate their answer. 
+ 17952b8b1f9fd04007108a12c67b222f65e0dd61
