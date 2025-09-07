@@ -11,7 +11,10 @@ const dashboardRoutes = require('./routes/dashboard');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://prep-mate-your-ai-interview-assista-mu.vercel.app', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 // Uploads directory not needed for serverless functions
 
