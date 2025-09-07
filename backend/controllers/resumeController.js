@@ -3,12 +3,7 @@ const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 const User = require('../models/User');
 
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => {
-    cb(null, `${req.user.id}-${Date.now()}-${file.originalname}`);
-  }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage,
@@ -41,18 +36,17 @@ const uploadResume = async (req, res) => {
     let text = '';
     
     if (req.file.mimetype === 'application/pdf') {
-      const dataBuffer = require('fs').readFileSync(req.file.path);
-      const data = await pdfParse(dataBuffer);
+      const data = await pdfParse(req.file.buffer);
       text = data.text;
     } else {
-      const result = await mammoth.extractRawText({ path: req.file.path });
+      const result = await mammoth.extractRawText({ buffer: req.file.buffer });
       text = result.value;
     }
 
     const skills = extractSkills(text);
     
     await User.findByIdAndUpdate(req.user.id, {
-      resumeUrl: req.file.path,
+      resumeUrl: req.file.originalname,
       skills
     });
 
