@@ -13,7 +13,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+// Uploads directory not needed for serverless functions
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -26,11 +26,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Create uploads directory
-const fs = require('fs');
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
-}
+// Uploads directory creation removed for serverless deployment
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

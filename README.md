@@ -166,6 +166,34 @@ prepmate/
 3. Make your changes
 4. Submit a pull request
 
+## Deployment on Vercel
+
+### Backend Deployment
+
+1. Push your backend code to GitHub
+2. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+3. Click "New Project" and import your repository
+4. Set root directory to `backend`
+5. Add environment variables:
+   - `MONGODB_URI` (use MongoDB Atlas)
+   - `JWT_SECRET`
+   - `OPENAI_API_KEY`
+6. Deploy
+
+### Frontend Deployment
+
+1. Update API base URL in frontend to your deployed backend URL
+2. Push frontend code to GitHub (can be same repo)
+3. Create new Vercel project for frontend
+4. Set root directory to `frontend`
+5. Deploy
+
+### Important Notes
+
+- Use MongoDB Atlas (not local MongoDB) for production
+- Update CORS settings in backend to allow your frontend domain
+- Set NODE_ENV=production in backend environment variables
+
 ## License
 
 This project is licensed under the MIT License.

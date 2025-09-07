@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api'
+  baseURL: 'https://prep-mate-your-ai-i-git-6861ce-akash-jaiswals-projects-3c4c721d.vercel.app/api'
 });
 
 API.interceptors.request.use((config) => {
