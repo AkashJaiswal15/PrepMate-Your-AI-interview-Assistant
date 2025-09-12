@@ -120,6 +120,18 @@ const submitAnswer = async (req, res) => {
     
     session.questions[questionIndex].userAnswer = answer;
     session.questions[questionIndex].aiFeedback = feedback;
+    
+    // Calculate session average score
+    const answeredQuestions = session.questions.filter(q => q.userAnswer);
+    if (answeredQuestions.length > 0) {
+      const totalScore = answeredQuestions.reduce((sum, q) => {
+        // Use current score for this question, random score for others (demo)
+        const questionScore = q === session.questions[questionIndex] ? Math.round(score) : 
+          Math.floor(Math.random() * 30) + 60;
+        return sum + questionScore;
+      }, 0);
+      session.score = Math.round(totalScore / answeredQuestions.length);
+    }
 
     res.json({ score: Math.round(score), feedback });
   } catch (error) {

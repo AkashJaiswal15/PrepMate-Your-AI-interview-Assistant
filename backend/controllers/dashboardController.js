@@ -1,40 +1,43 @@
-const Session = require('../models/Session');
-const User = require('../models/User');
+const { findUserById, sessions } = require('../utils/fileStorage');
 
 const getDashboard = async (req, res) => {
   try {
-    const sessions = await Session.find({ userId: req.user.id })
-      .sort({ createdAt: -1 })
-      .limit(10);
+    const user = findUserById(req.user._id);
+    const userSessions = sessions.filter(s => s.userId === req.user._id)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 10);
 
-    const pinnedQuestions = await Session.aggregate([
-      { $match: { userId: req.user._id } },
-      { $unwind: '$questions' },
-      { $match: { 'questions.pinned': true } },
-      { $project: {
-        question: '$questions.text',
-        answer: '$questions.userAnswer',
-        feedback: '$questions.aiFeedback',
-        date: '$createdAt'
-      }},
-      { $sort: { date: -1 } },
-      { $limit: 5 }
-    ]);
+    // Get pinned questions
+    const pinnedQuestions = [];
+    userSessions.forEach(session => {
+      session.questions.forEach(q => {
+        if (q.pinned) {
+          pinnedQuestions.push({
+            question: q.text,
+            answer: q.userAnswer,
+            feedback: q.aiFeedback,
+            date: session.createdAt
+          });
+        }
+      });
+    });
 
-    const stats = await Session.aggregate([
-      { $match: { userId: req.user._id } },
-      { $group: {
-        _id: null,
-        totalSessions: { $sum: 1 },
-        avgScore: { $avg: { $ifNull: ['$score', 0] } },
-        totalQuestions: { $sum: { $size: '$questions' } }
-      }}
-    ]);
+    // Calculate stats
+    const totalSessions = userSessions.length;
+    const totalQuestions = userSessions.reduce((sum, s) => sum + s.questions.length, 0);
+    const sessionsWithScores = userSessions.filter(s => s.score);
+    const avgScore = sessionsWithScores.length > 0 
+      ? sessionsWithScores.reduce((sum, s) => sum + s.score, 0) / sessionsWithScores.length 
+      : 0;
 
     res.json({
-      sessions,
-      pinnedQuestions,
-      stats: stats[0] || { totalSessions: 0, avgScore: 0, totalQuestions: 0 }
+      sessions: userSessions,
+      pinnedQuestions: pinnedQuestions.slice(0, 5),
+      stats: { 
+        totalSessions, 
+        avgScore: Math.round(avgScore), 
+        totalQuestions 
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -43,9 +46,9 @@ const getDashboard = async (req, res) => {
 
 const getSession = async (req, res) => {
   try {
-    const session = await Session.findById(req.params.id);
+    const session = sessions.find(s => s._id === req.params.id);
     
-    if (!session || session.userId.toString() !== req.user.id) {
+    if (!session || session.userId !== req.user._id) {
       return res.status(404).json({ message: 'Session not found' });
     }
 
