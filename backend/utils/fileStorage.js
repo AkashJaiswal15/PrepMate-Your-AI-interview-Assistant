@@ -23,8 +23,8 @@ const findUserById = (id) => {
   if (!user) {
     user = {
       _id: id,
-      name: 'Demo User',
-      email: 'demo@example.com',
+      name: 'User' + id.toString().slice(-4), // Use last 4 chars of ID as name
+      email: 'user@example.com',
       skills: ['javascript', 'react', 'node.js'],
       createdAt: new Date()
     };

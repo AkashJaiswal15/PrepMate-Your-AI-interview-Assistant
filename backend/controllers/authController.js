@@ -34,11 +34,12 @@ const login = async (req, res) => {
     
     let user = findUserByEmail(email);
     
-    // If user doesn't exist, create a demo user for any login attempt
+    // If user doesn't exist, create a user with email as name for demo
     if (!user) {
       const hashedPassword = await bcrypt.hash(password, 12);
+      const userName = email.split('@')[0]; // Use email prefix as name
       user = createUser({ 
-        name: 'Demo User', 
+        name: userName, 
         email: email, 
         password: hashedPassword,
         skills: ['javascript', 'react', 'node.js']
