@@ -12,8 +12,8 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://prep-mate-your-ai-interview-assistant-vio9.vercel.app', 'http://localhost:3000'],
-  credentials: true
+  origin: '*',
+  credentials: false
 }));
 app.use(express.json());
 // Uploads directory not needed for serverless functions
