@@ -99,8 +99,12 @@ const generateQuestions = async (req, res) => {
 const submitAnswer = async (req, res) => {
   try {
     const { sessionId, questionIndex, answer } = req.body;
+    console.log('📝 Submit Answer - SessionId:', sessionId, 'QuestionIndex:', questionIndex, 'Answer length:', answer?.length);
     
     const session = sessions.find(s => s._id === sessionId);
+    console.log('🔍 Session found:', session ? 'Yes' : 'No');
+    console.log('👤 User match:', session?.userId === req.user._id);
+    
     if (!session || session.userId !== req.user._id) {
       return res.status(404).json({ message: 'Session not found' });
     }
@@ -118,11 +122,14 @@ const submitAnswer = async (req, res) => {
     
     const feedback = feedbackTemplates[Math.floor(Math.random() * feedbackTemplates.length)];
     
+    console.log('💾 Saving answer to session...');
     session.questions[questionIndex].userAnswer = answer;
     session.questions[questionIndex].aiFeedback = feedback;
     
     // Calculate session average score
     const answeredQuestions = session.questions.filter(q => q.userAnswer);
+    console.log('📈 Answered questions count:', answeredQuestions.length);
+    
     if (answeredQuestions.length > 0) {
       const totalScore = answeredQuestions.reduce((sum, q) => {
         // Use current score for this question, random score for others (demo)
@@ -131,8 +138,10 @@ const submitAnswer = async (req, res) => {
         return sum + questionScore;
       }, 0);
       session.score = Math.round(totalScore / answeredQuestions.length);
+      console.log('🏆 Session score updated:', session.score);
     }
 
+    console.log('✅ Answer submitted successfully');
     res.json({ score: Math.round(score), feedback });
   } catch (error) {
     console.error('AI Evaluation Error:', error);
