@@ -32,9 +32,22 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    const user = findUserByEmail(email);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    let user = findUserByEmail(email);
+    
+    // If user doesn't exist, create a demo user for any login attempt
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(password, 12);
+      user = createUser({ 
+        name: 'Demo User', 
+        email: email, 
+        password: hashedPassword,
+        skills: ['javascript', 'react', 'node.js']
+      });
+    } else {
+      // Check password for existing user
+      if (!(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
     }
 
     const token = generateToken(user._id);
