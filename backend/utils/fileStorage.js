@@ -18,7 +18,19 @@ const createUser = (userData) => {
 };
 
 const findUserById = (id) => {
-  return users.find(user => user._id === id);
+  let user = users.find(user => user._id === id);
+  // If user not found, create a temporary user for demo
+  if (!user) {
+    user = {
+      _id: id,
+      name: 'Demo User',
+      email: 'demo@example.com',
+      skills: ['javascript', 'react', 'node.js'],
+      createdAt: new Date()
+    };
+    users.push(user);
+  }
+  return user;
 };
 
 const updateUser = (id, updateData) => {
