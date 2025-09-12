@@ -1,7 +1,7 @@
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
-const User = require('../models/User');
+const { updateUser } = require('../utils/fileStorage');
 
 const storage = multer.memoryStorage();
 
@@ -45,7 +45,7 @@ const uploadResume = async (req, res) => {
 
     const skills = extractSkills(text);
     
-    await User.findByIdAndUpdate(req.user.id, {
+    updateUser(req.user._id, {
       resumeUrl: req.file.originalname,
       skills
     });
