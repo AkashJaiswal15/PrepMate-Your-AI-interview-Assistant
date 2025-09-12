@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://prep-mate-your-ai-interview-assista-mu.vercel.app', 'http://localhost:3000'],
+  origin: ['https://prep-mate-your-ai-interview-assistant-vio9.vercel.app', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
